@@ -5,6 +5,7 @@ import {
   IDataStore,
   IDataStoreORM,
   IKeyManager,
+  IResolver,
   createAgent,
 } from "@veramo/core";
 
@@ -21,6 +22,15 @@ import { PeerDIDProvider } from "@veramo/did-provider-peer";
 
 // A key management system that uses a local database to store keys (used by KeyManager)
 import { KeyManagementSystem, SecretBox } from "@veramo/kms-local";
+
+// Core DID resolver plugin. This plugin orchestrates different DID resolver drivers to resolve the corresponding DID Documents for the given DIDs.
+// This plugin implements `IResolver`
+import { DIDResolverPlugin } from "@veramo/did-resolver";
+
+// the did:peer resolver package
+import { getResolver as peerDidResolver } from "@veramo/did-provider-peer";
+// the did:web resolver package
+import { getResolver as webDidResolver } from "web-did-resolver";
 
 // Storage plugin using TypeORM to link to a database
 import {
@@ -48,7 +58,7 @@ const dbConnection = new DataSource({
 }).initialize();
 
 export const agent = createAgent<
-  IDIDManager & IKeyManager & IDataStore & IDataStoreORM
+  IDIDManager & IKeyManager & IDataStore & IDataStoreORM & IResolver
 >({
   plugins: [
     new KeyManager({
@@ -67,6 +77,10 @@ export const agent = createAgent<
           defaultKms: "local",
         }),
       },
+    }),
+    new DIDResolverPlugin({
+      ...peerDidResolver(),
+      ...webDidResolver(),
     }),
   ],
 });
