@@ -77,7 +77,7 @@ const App = () => {
     }
   };
 
-  // Check for existing identifers on load and set them to state
+  // Check for existing identifiers on load and set them to state
   useEffect(() => {
     const getIdentifiers = async () => {
       const _ids = await agent.didManagerFind();
