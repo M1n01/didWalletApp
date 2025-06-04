@@ -44,6 +44,12 @@ import {
 // TypeORM is installed with '@veramo/data-store'
 import { DataSource } from "typeorm";
 
+import {
+  CredentialPlugin,
+  ICredentialIssuer,
+  ICredentialVerifier,
+} from "@veramo/credential-w3c";
+
 const DB_ENCRYPTION_KEY =
   "29739248cad1bd1a0fc4d9b75cd4d2990de535baf5caadfdf8d8f86664aa830c";
 
@@ -58,7 +64,13 @@ const dbConnection = new DataSource({
 }).initialize();
 
 export const agent = createAgent<
-  IDIDManager & IKeyManager & IDataStore & IDataStoreORM & IResolver
+  IDIDManager &
+    IKeyManager &
+    IDataStore &
+    IDataStoreORM &
+    IResolver &
+    ICredentialIssuer &
+    ICredentialVerifier
 >({
   plugins: [
     new KeyManager({
@@ -82,5 +94,6 @@ export const agent = createAgent<
       ...peerDidResolver(),
       ...webDidResolver(),
     }),
+    new CredentialPlugin(),
   ],
 });

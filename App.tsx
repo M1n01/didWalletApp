@@ -7,12 +7,19 @@ import React, { useEffect, useState } from "react";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 // import some data types:
-import { DIDResolutionResult, IIdentifier } from "@veramo/core";
+import {
+  DIDResolutionResult,
+  IIdentifier,
+  VerifiableCredential,
+} from "@veramo/core";
 // Import the agent from our earlier setup
 import { agent } from "./setup";
 
 const App = () => {
   const [identifiers, setIdentifiers] = useState<IIdentifier[]>([]);
+  const [credential, setCredential] = useState<
+    VerifiableCredential | undefined
+  >();
   const [resolutionResult, setResolutionResult] = useState<
     DIDResolutionResult | undefined
   >();
@@ -32,6 +39,25 @@ const App = () => {
       },
     });
     setIdentifiers((s) => s.concat([_id]));
+  };
+
+  const createCredential = async () => {
+    if (identifiers[0].did) {
+      const verifiableCredential = await agent.createVerifiableCredential({
+        credential: {
+          issuer: { id: identifiers[0].did },
+          issuanceDate: new Date().toISOString(),
+          credentialSubject: {
+            id: "did:web:community.veramo.io",
+            you: "Rock",
+          },
+        },
+        save: false,
+        proofFormat: "jwt",
+      });
+
+      setCredential(verifiableCredential);
+    }
   };
 
   const resolveDID = async (did: string) => {
@@ -87,6 +113,16 @@ const App = () => {
               <Text>tap on a DID to resolve it</Text>
             )}
           </View>
+        </View>
+        <View style={{ padding: 20 }}>
+          <Button
+            title="Create Credential"
+            disabled={!identifiers || identifiers.length === 0}
+            onPress={() => createCredential()}
+          />
+          <Text style={{ fontSize: 10 }}>
+            {JSON.stringify(credential, null, 2)}
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -13,6 +13,7 @@
     "@ethersproject/shims": "^5.8.0",
     "@sinonjs/text-encoding": "^0.7.3",
     "@veramo/core": "^6.0.0",
+    "@veramo/credential-w3c": "^6.0.0",
     "@veramo/data-store": "^6.0.0",
     "@veramo/did-manager": "^6.0.0",
     "@veramo/did-provider-peer": "^6.0.0",
