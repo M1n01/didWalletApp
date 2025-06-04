@@ -10,6 +10,7 @@ import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
   DIDResolutionResult,
   IIdentifier,
+  IVerifyResult,
   VerifiableCredential,
 } from "@veramo/core";
 // Import the agent from our earlier setup
@@ -22,6 +23,9 @@ const App = () => {
   >();
   const [resolutionResult, setResolutionResult] = useState<
     DIDResolutionResult | undefined
+  >();
+  const [verificationResult, setVerificationResult] = useState<
+    IVerifyResult | undefined
   >();
 
   // Add the new identifier to state
@@ -64,6 +68,13 @@ const App = () => {
     const result = await agent.resolveDid({ didUrl: did });
     console.log(JSON.stringify(result, null, 2));
     setResolutionResult(result);
+  };
+
+  const verifyCredential = async () => {
+    if (credential) {
+      const result = await agent.verifyCredential({ credential });
+      setVerificationResult(result);
+    }
   };
 
   // Check for existing identifers on load and set them to state
@@ -122,6 +133,16 @@ const App = () => {
           />
           <Text style={{ fontSize: 10 }}>
             {JSON.stringify(credential, null, 2)}
+          </Text>
+        </View>
+        <View style={{ padding: 20 }}>
+          <Button
+            title="Verify Credential"
+            disabled={!credential}
+            onPress={() => verifyCredential()}
+          />
+          <Text style={{ fontSize: 10 }}>
+            {JSON.stringify(verificationResult, null, 2)}
           </Text>
         </View>
       </ScrollView>
