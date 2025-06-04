@@ -61,7 +61,9 @@ const dbConnection = new DataSource({
   migrationsRun: true,
   logging: ["error", "info", "warn"],
   entities: Entities,
-}).initialize();
+});
+
+dbConnection.initialize();
 
 export const agent = createAgent<
   IDIDManager &
